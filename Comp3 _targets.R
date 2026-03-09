@@ -100,9 +100,9 @@ pluck("lastdate") |>
 as.Date()
 
 # Names
-patients[,
-names(.SD) := lapply(.SD, \(x) replace_na(x, "")),
-.SDcols = c("prefix", "middle")
+patients[, 
+  (names(.SD)) := lapply(.SD, \(x) replace_na(as.character(x), "")),
+  .SDcols = c("prefix", "middle")
 ]
 patients[,
 full_name := paste(
@@ -146,18 +146,17 @@ fs::dir_ls("data-fixed/") |>
 purrr::walk(csv2parquet, .progress = TRUE)
 fs::dir_delete("data-fixed")
 procedures <- duckplyr::read_parquet_duckdb("data-parquet/procedures.parquet")
-library(dplyr)
-library(data.table)
 procedures <-
 procedures |>
 select(patient, reasoncode_icd10, start) |>
 filter(!is.na(reasoncode_icd10)) |>
 collect()
 setDT(procedures, key = "patient")
-procedures[, year := year(start)][, start := NULL]
+
+library(data.table)
 proc_n_adults <-
 procedures[
-patient[, .(id, birthdate = as.IDate(birthdate))],
+patients[, .(id, birthdate = as.IDate(birthdate))],
 on = c(patient = "id")
 ] |>
 _[year - year(birthdate) >= 18L, .N, .(reasoncode_icd10, year)]
@@ -169,6 +168,7 @@ cond_by_year <- setDT(decoder::icd10se)[
 proc_n_adults,
 on = c(key = "reasoncode_icd10")
 ]
+
 # Visualisations
 library(ggplot2)
 top5 <- cond_by_year[, .(N = sum(N)), .(value)][order(-N)][1:5, value]
