@@ -1,13 +1,23 @@
-# Installing Packages and loading them
-install.packages("dplyr")
-install.packages("decoder")
-library(decoder)
-library(duckplyr)
-library(dplyr)
+# Loading packages
 library(targets)
-library(tidyverse)
-library(data.table)
-library(pointblank)
+tar_option_set(
+  packages = c(
+    "data.table",
+    "duckplyr",
+    "dplyr",
+    "readr",
+    "stringr",
+    "forcats",
+    "janitor",
+    "pointblank",
+    "decoder",
+    "ggplot2",
+    "purrr",
+    "fs",
+    "zip",
+    "leaflet"
+  )
+)
 # Patient Data
  if (!fs::file_exists("data.zip")) {
 curl::curl_download(
