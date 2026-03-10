@@ -15,7 +15,8 @@ tar_option_set(
     "purrr",
     "fs",
     "zip",
-    "leaflet"
+    "leaflet",
+    "tidyr"
   )
 )
 # Loading Patient's Data
@@ -54,11 +55,13 @@ tar_target(
 tar_target(
   validation_report,
   {
+    report_path <- "patient_validation.html"
+
     checks <-
       patients_clean |>
       create_agent(label = "Validate patient demographic data") |>
       col_vals_between(
-        where(is.Date),
+        c(birthdate, deathdate),
         as.Date("1900-01-01"),
         as.Date(Sys.Date()),
         na_pass = TRUE
@@ -75,7 +78,10 @@ tar_target(
       col_is_integer(id) |>
       interrogate()
 
-    export_report(checks, "patient_validation.html")
+    pointblank::export_report(checks, filename = report_path)
+
+    stopifnot(file.exists(report_path))
+    report_path
   },
   format = "file"
 ),
