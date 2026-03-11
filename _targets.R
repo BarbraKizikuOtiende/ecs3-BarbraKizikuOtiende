@@ -1,5 +1,6 @@
 # Loading packages
 library(targets)
+library(tarchetypes)
 tar_option_set(
   packages = c(
     "data.table",
@@ -17,7 +18,8 @@ tar_option_set(
     "zip",
     "leaflet",
     "tidyr"
-  )
+  ),
+   format = "qs"
 )
 # Loading Patient's Data
 list(
