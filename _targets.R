@@ -122,9 +122,9 @@ tar_target(
     patients <- copy(patients_factors)
 
     patients[
-      ,
-      age := as.integer((as.IDate(Sys.Date()) - birthdate)) %/% 365.241
-    ]
+  ,
+  age := floor(lubridate::interval(birthdate, lubridate::today()) / lubridate::years(1))
+]
 
     patients
   }
